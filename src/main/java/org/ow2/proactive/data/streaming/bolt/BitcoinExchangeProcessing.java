@@ -39,31 +39,36 @@ public class BitcoinExchangeProcessing extends BaseBasicBolt {
             data = (String) input.getValues().get(0);
             rate = JsonUtil.getRate(data);
 
-            collector.emit("RawRateStream",new Values(rate));
-            LOG.info("RawRateStream: "+rate);
-
             if (previous_rate!=-1) {
 
-                //raw value
-                collector.emit("RawRateStream",new Values(rate));
-                LOG.info("RawRateStream: "+rate);
+                collector.emit("RateStream",new Values(String.valueOf(rate)));
+                LOG.info("RateStream: "+rate);
 
                 //check for gap
                 diff = Math.abs(previous_rate - rate);
-                if (diff > max_gap){
+
+                if (diff >= max_gap){
                     String alert = "{ \"previous rate\": \""+previous_rate+"\"," +
                             "\"current rate\": \""+rate+"\"," +
                             "\"diff\": \""+diff+"\"," +
                             "\"message\": \"The Bitcoin value changed more than "+max_gap+"\""+
                             "}";
-                    collector.emit(new Values(alert));
-                    LOG.info("Gap Alert: "+alert);
+
+                    collector.emit("AlertStream", new Values(alert));
+                    LOG.info("AlertStream: "+alert);
+
+                    collector.emit("GapStream", new Values(String.valueOf(diff)));
+                    LOG.info("GapStream: "+diff);
+
+                } else{
+                    collector.emit("GapStream", new Values(String.valueOf(0)));
+                    LOG.info("GapStream: "+0);
                 }
 
                 //check for thresh
-                Double thresh = ((rate >= threshold) ? rate : threshold);
-                collector.emit("ThresholdStream",new Values(thresh));
-                LOG.info("Threshold stream: "+thresh);
+                double thresh = ((rate >= threshold) ? rate : threshold);
+                collector.emit("ThresholdStream",new Values(String.valueOf(thresh)));
+                LOG.info("ThresholdStream: "+thresh);
 
             }
 
@@ -87,8 +92,9 @@ public class BitcoinExchangeProcessing extends BaseBasicBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declareStream("RawRateStream", new Fields("rawRate"));
-        declarer.declareStream("ThresholdStream", new Fields("thresholdRate"));
-        declarer.declare(new Fields("message"));
+        declarer.declareStream("RateStream", new Fields("message"));
+        declarer.declareStream("GapStream", new Fields("message"));
+        declarer.declareStream("AlertStream", new Fields("message"));
+        declarer.declareStream("ThresholdStream", new Fields("message"));
     }
 }

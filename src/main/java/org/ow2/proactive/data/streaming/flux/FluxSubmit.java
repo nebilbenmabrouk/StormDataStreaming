@@ -20,10 +20,9 @@ public class FluxSubmit {
     public static void main(String[] args) throws TException, IOException, IllegalAccessException,
             InstantiationException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException {
 
+        String propPath = Thread.currentThread().getContextClassLoader().getResource("BitcoinExchangeDataflow.properties").getPath();
 
-        //String propPath = Thread.currentThread().getContextClassLoader().getResource("").getPath()+ "resources/BitcoinExchangeDataflow.properties";
-
-        TopologyDef topologyDef = FluxParser.parseResource("/BitcoinExchangeDataflow.yaml", false, true, "BitcoinExchangeDataflow.properties", false);
+        TopologyDef topologyDef = FluxParser.parseResource("/BitcoinExchangeDataflow.yaml", false, true, propPath, false);
 
         Config conf = FluxBuilder.buildConfig(topologyDef);
         ExecutionContext context = new ExecutionContext(topologyDef, conf);

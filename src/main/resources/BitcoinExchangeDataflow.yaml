@@ -20,17 +20,49 @@ components:
     className: "org.apache.storm.kafka.ZkHosts"
     constructorArgs:
       - "${kafka.zookeeper.hosts}"
-#      - "172.17.0.2:2181"
-# Alternative kafka config
-#  - id: "kafkaConfig"
-#    className: "org.apache.storm.kafka.KafkaConfig"
-#    constructorArgs:
-#      # brokerHosts
-#      - ref: "zkHosts"
-#      # topic
-#      - "myKafkaTopic"
-#      # clientId (optional)
-#      - "myKafkaClientId"
+
+  - id: "rateTopicSelector"
+    className: "org.apache.storm.kafka.bolt.selector.DefaultTopicSelector"
+    constructorArgs:
+      - "${rate.message.topic}"
+
+  - id: "gapTopicSelector"
+    className: "org.apache.storm.kafka.bolt.selector.DefaultTopicSelector"
+    constructorArgs:
+      - "${gap.message.topic}"
+
+  - id: "alertTopicSelector"
+    className: "org.apache.storm.kafka.bolt.selector.DefaultTopicSelector"
+    constructorArgs:
+      - "${alert.message.topic}"
+
+  - id: "thresholdTopicSelector"
+    className: "org.apache.storm.kafka.bolt.selector.DefaultTopicSelector"
+    constructorArgs:
+      - "${threshold.message.topic}"
+
+  - id: "kafkaMapper"
+    className: "org.apache.storm.kafka.bolt.mapper.FieldNameBasedTupleToKafkaMapper"
+
+  - id: "kafkaProducerProps"
+    className: "java.util.Properties"
+    configMethods:
+      - name: "put"
+        args:
+          - "bootstrap.servers"
+          - "${kafka.bootstrap.servers}"
+      - name: "put"
+        args:
+          - "acks"
+          - "1"
+      - name: "put"
+        args:
+          - "key.serializer"
+          - "org.apache.kafka.common.serialization.StringSerializer"
+      - name: "put"
+        args:
+          - "value.serializer"
+          - "org.apache.kafka.common.serialization.StringSerializer"
 
   - id: "spoutConfig"
     className: "org.apache.storm.kafka.SpoutConfig"
@@ -38,7 +70,7 @@ components:
       # brokerHosts
       - ref: "zkHosts"
       # topic
-      - "${message.topic}"
+      - "${raw.message.topic}"
       # zkRoot
       - "/kafkaSpout"
       # id
@@ -59,7 +91,7 @@ config:
 
 # spout definitions
 spouts:
-  - id: "kafkaSpout"
+  - id: "KafkaSpout"
     className: "org.apache.storm.kafka.KafkaSpout"
     constructorArgs:
       - ref: "spoutConfig"
@@ -70,32 +102,49 @@ bolts:
     className: "org.ow2.proactive.data.streaming.bolt.BitcoinExchangeProcessing"
     parallelism: 1
 
-  - id: "RawRate"
-    className: "org.ow2.proactive.data.streaming.bolt.RawRateBolt"
+  - id: "KafkaRate"
+    className: "org.apache.storm.kafka.bolt.KafkaBolt"
     parallelism: 1
+    configMethods:
+      - name: "withProducerProperties"
+        args: [ref: "kafkaProducerProps"]
+      - name: "withTopicSelector"
+        args: [ref: "rateTopicSelector"]
+      - name: "withTupleToKafkaMapper"
+        args: [ref: "kafkaMapper"]
 
-  - id: "GapAlertBolt"
-    className: "org.ow2.proactive.data.streaming.bolt.GapAlertBolt"
+  - id: "KafkaGap"
+    className: "org.apache.storm.kafka.bolt.KafkaBolt"
     parallelism: 1
+    configMethods:
+      - name: "withProducerProperties"
+        args: [ref: "kafkaProducerProps"]
+      - name: "withTopicSelector"
+        args: [ref: "gapTopicSelector"]
+      - name: "withTupleToKafkaMapper"
+        args: [ref: "kafkaMapper"]
 
-#  - id: "RawRate"
-#    className: "org.apache.storm.flux.wrappers.bolts.FluxShellBolt"
-#    constructorArgs:
-      # command line
-#      - ["python", "visdomRawRate.py"]
-      # output fields
-#      - ["rate"]
-#    parallelism: 1
+  - id: "KafkaAlert"
+    className: "org.apache.storm.kafka.bolt.KafkaBolt"
+    parallelism: 1
+    configMethods:
+      - name: "withProducerProperties"
+        args: [ref: "kafkaProducerProps"]
+      - name: "withTopicSelector"
+        args: [ref: "alertTopicSelector"]
+      - name: "withTupleToKafkaMapper"
+        args: [ref: "kafkaMapper"]
 
-
-# - id: "splitsentence"
-#    className: "org.apache.storm.flux.wrappers.bolts.FluxShellBolt"
-#    constructorArgs:
-      # command line
-#      - ["python", "splitsentence.py"]
-      # output fields
-#      - ["word"]
-#    parallelism: 1
+  - id: "KafkaThreshold"
+    className: "org.apache.storm.kafka.bolt.KafkaBolt"
+    parallelism: 1
+    configMethods:
+      - name: "withProducerProperties"
+        args: [ref: "kafkaProducerProps"]
+      - name: "withTopicSelector"
+        args: [ref: "thresholdTopicSelector"]
+      - name: "withTupleToKafkaMapper"
+        args: [ref: "kafkaMapper"]
 
 #stream definitions
 # stream definitions define connections between spouts and bolts.
@@ -104,22 +153,35 @@ bolts:
 
 streams:
   - name: "kafka --> BitcoinData" # name isn't used (placeholder for logging, UI, etc.)
-    from: "kafkaSpout"
+    from: "KafkaSpout"
     to: "BitcoinData"
     grouping:
-      type: SHUFFLE
+      type: LOCAL_OR_SHUFFLE
 
-  - name: "BitcoinData --> RawRate"
+  - name: "BitcoinData --> KafkaRate"
     from: "BitcoinData"
-    to: "RawRate"
+    to: "KafkaRate"
     grouping:
-      streamId: "RawRateStream"
-      type: SHUFFLE
+      streamId: "RateStream"
+      type: LOCAL_OR_SHUFFLE
 
-  - name: "BitcoinData --> GapAlertBolt"
+  - name: "BitcoinData --> KafkaGap"
     from: "BitcoinData"
-    to: "GapAlertBolt"
+    to: "KafkaGap"
     grouping:
-      streamId: "GapAlertStream"
-      type: SHUFFLE
+      streamId: "GapStream"
+      type: LOCAL_OR_SHUFFLE
 
+  - name: "BitcoinData --> KafkaAlert"
+    from: "BitcoinData"
+    to: "KafkaAlert"
+    grouping:
+      streamId: "AlertStream"
+      type: LOCAL_OR_SHUFFLE
+
+  - name: "BitcoinData --> KafkaThreshold"
+    from: "BitcoinData"
+    to: "KafkaThreshold"
+    grouping:
+      streamId: "ThresholdStream"
+      type: LOCAL_OR_SHUFFLE
