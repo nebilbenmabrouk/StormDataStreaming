@@ -43,6 +43,7 @@ print(iteration,value)
 
 if iteration == 0:
   viz.text("%s" % value, win=WIN, update='replace')
+  viz.text("Bitcoin variation notifications:\n", win=WIN)
 else:
   viz.text("%s" % value, win=WIN, update='append')
   
