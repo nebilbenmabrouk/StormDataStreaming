@@ -29,8 +29,8 @@ value = args.value
 viz = Visdom(server="http://"+args.visdom_host, port=args.visdom_port)
 assert viz.check_connection()
 
-if not viz.win_exists(WIN):
- viz.text("Bitcoin variation notifications:\n", win=WIN)
+#if not viz.win_exists(WIN):
+ #viz.text("Bitcoin variation notifications:\n", win=WIN)
 
 if os.path.exists(store_file):
   f = open(store_file, 'rb')
@@ -42,7 +42,9 @@ else:
 print(iteration,value)
 
 if iteration == 0:
-  viz.text("Bitcoin variation notifications:\n", win=WIN, append=False)
+  viz.close(win=WIN)
+  viz.text("Bitcoin variation notifications:\n", win=WIN)
+  #viz.text("Bitcoin variation notifications:\n", win=WIN, append=False)
   viz.text(value, win=WIN, append=True)
 else:
   viz.text("%s" % value, win=WIN, append=True)
@@ -51,5 +53,3 @@ iteration = iteration + 1
 f = open(store_file, 'wb')
 pickle.dump(iteration, f)
 f.close()
-
-
