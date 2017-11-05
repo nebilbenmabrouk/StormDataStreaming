@@ -42,15 +42,14 @@ else:
 print(iteration,value)
 
 if iteration == 0:
-  viz.text("%s" % value, win=WIN, update='replace')
-  viz.text("Bitcoin variation notifications:\n", win=WIN)
+  viz.text("Bitcoin variation notifications:\n", win=WIN, append=False)
+  viz.text("%s" % value, win=WIN, append=True)
 else:
-  viz.text("%s" % value, win=WIN, update='append')
+  viz.text("%s" % value, win=WIN, append=True)
   
 iteration = iteration + 1
 f = open(store_file, 'wb')
 pickle.dump(iteration, f)
 f.close()
-
 
 
