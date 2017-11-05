@@ -42,8 +42,9 @@ else:
 print(iteration,value)
 
 if iteration == 0:
-  viz.close(win=WIN)
-  viz.text("Bitcoin variation notifications:\n", win=WIN)
+  if viz.win_exists(WIN):
+    viz.close(win=WIN)
+  viz.text("Bitcoin variation notifications:\n", win=WIN, append=False)
   #viz.text("Bitcoin variation notifications:\n", win=WIN, append=False)
   viz.text(value, win=WIN, append=True)
 else:
