@@ -29,8 +29,8 @@ value = args.value
 viz = Visdom(server="http://"+args.visdom_host, port=args.visdom_port)
 assert viz.check_connection()
 
-#if not viz.win_exists(WIN):
- #viz.text("Bitcoin variation notifications:\n", win=WIN)
+if not viz.win_exists(WIN):
+  viz.text("Bitcoin variation notifications:\n", win=WIN)
 
 if os.path.exists(store_file):
   f = open(store_file, 'rb')
@@ -42,11 +42,8 @@ else:
 print(iteration,value)
 
 if iteration == 0:
-  if viz.win_exists(WIN):
-    viz.close(win=WIN)
-  viz.text("Bitcoin variation notifications:\n", win=WIN, append=False)
   #viz.text("Bitcoin variation notifications:\n", win=WIN, append=False)
-  viz.text(value, win=WIN, append=True)
+  viz.text(value, win=WIN, append=False)
 else:
   viz.text("%s" % value, win=WIN, append=True)
   
