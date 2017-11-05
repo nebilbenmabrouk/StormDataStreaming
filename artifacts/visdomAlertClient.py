@@ -12,6 +12,7 @@ DEFAULT_VISDOM_PORT = 8097
 DEFAULT_DATA_VALUE = 0.00
 
 WIN = 'alerts'
+store_file = "alerts.pckl"
 
 parser = argparse.ArgumentParser(description='visdom client')
 parser.add_argument('--visdom_host', type=str, default=DEFAULT_VISDOM_HOST, 
@@ -31,7 +32,24 @@ assert viz.check_connection()
 if not viz.win_exists(WIN):
  viz.text("Bitcoin variation notifications:\n", win=WIN)
 
-viz.text("%s" % value, win=WIN, append=True)
+if os.path.exists(store_file):
+  f = open(store_file, 'rb')
+  iteration = int(pickle.load(f))
+  f.close()
+else:
+  iteration = 0
+
+print(iteration,value)
+
+if iteration == 0:
+  viz.text("%s" % value, win=WIN, update='replace')
+else:
+  viz.text("%s" % value, win=WIN, update='append')
+  
+iteration = iteration + 1
+f = open(store_file, 'wb')
+pickle.dump(iteration, f)
+f.close()
 
 
 
