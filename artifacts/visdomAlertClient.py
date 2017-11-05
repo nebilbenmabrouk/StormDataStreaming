@@ -9,7 +9,7 @@ from visdom import Visdom
 # General parameters
 DEFAULT_VISDOM_HOST = "127.0.0.1"
 DEFAULT_VISDOM_PORT = 8097
-DEFAULT_DATA_VALUE = 0.00
+DEFAULT_DATA_VALUE = ""
 
 WIN = 'alerts'
 store_file = "alerts.pckl"
