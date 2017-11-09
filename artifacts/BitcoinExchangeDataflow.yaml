@@ -36,10 +36,10 @@ components:
     constructorArgs:
       - "${alert.message.topic}"
 
-#  - id: "thresholdTopicSelector"
-#    className: "org.apache.storm.kafka.bolt.selector.DefaultTopicSelector"
-#    constructorArgs:
-#      - "${threshold.message.topic}"
+  - id: "thresholdTopicSelector"
+    className: "org.apache.storm.kafka.bolt.selector.DefaultTopicSelector"
+    constructorArgs:
+      - "${threshold.message.topic}"
 
   - id: "kafkaMapper"
     className: "org.apache.storm.kafka.bolt.mapper.FieldNameBasedTupleToKafkaMapper"
@@ -135,16 +135,16 @@ bolts:
       - name: "withTupleToKafkaMapper"
         args: [ref: "kafkaMapper"]
 
-#  - id: "KafkaThreshold"
-#    className: "org.apache.storm.kafka.bolt.KafkaBolt"
-#    parallelism: 1
-#    configMethods:
-#      - name: "withProducerProperties"
-#        args: [ref: "kafkaProducerProps"]
-#      - name: "withTopicSelector"
-#        args: [ref: "thresholdTopicSelector"]
-#      - name: "withTupleToKafkaMapper"
-#        args: [ref: "kafkaMapper"]
+  - id: "KafkaThreshold"
+    className: "org.apache.storm.kafka.bolt.KafkaBolt"
+    parallelism: 1
+    configMethods:
+      - name: "withProducerProperties"
+        args: [ref: "kafkaProducerProps"]
+      - name: "withTopicSelector"
+        args: [ref: "thresholdTopicSelector"]
+      - name: "withTupleToKafkaMapper"
+        args: [ref: "kafkaMapper"]
 
 #stream definitions
 # stream definitions define connections between spouts and bolts.
@@ -179,9 +179,9 @@ streams:
       streamId: "AlertStream"
       type: LOCAL_OR_SHUFFLE
 
-#  - name: "BitcoinData --> KafkaThreshold"
-#    from: "BitcoinData"
-#    to: "KafkaThreshold"
-#    grouping:
-#      streamId: "ThresholdStream"
-#      type: LOCAL_OR_SHUFFLE
+  - name: "BitcoinData --> KafkaThreshold"
+    from: "BitcoinData"
+    to: "KafkaThreshold"
+    grouping:
+      streamId: "ThresholdStream"
+      type: LOCAL_OR_SHUFFLE
