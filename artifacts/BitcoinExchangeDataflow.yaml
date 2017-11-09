@@ -82,7 +82,7 @@ components:
       - "myId"
     properties:
       - name: "ignoreZkOffsets"
-        value: false
+        value: true
       - name: "scheme"
         ref: "stringMultiScheme"
 
