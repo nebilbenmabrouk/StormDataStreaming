@@ -63,6 +63,11 @@ components:
         args:
           - "value.serializer"
           - "org.apache.kafka.common.serialization.StringSerializer"
+      - name: "put"
+        args:
+          - "compression.type"
+          - "lz4"
+          
 
   - id: "spoutConfig"
     className: "org.apache.storm.kafka.SpoutConfig"
