@@ -1,0 +1,15 @@
+storm.zookeeper.servers:
+     - "zookeeper"
+storm.zookeeper.port: 2181 
+nimbus.seeds: ["nimbus"]
+storm.scheduler: "org.apache.storm.scheduler.resource.ResourceAwareScheduler"
+nimbus.childopts: "-Xmx128m"
+ui.childopts: "-Xmx64m"
+drpc.childopts: "-Xmx64m"
+pacemaker.childopts: "-Xmx64m"
+supervisor.memory.capacity.mb: 64
+supervisor.cpu.capacity: 100.0
+supervisor.childopts: "-Xmx64m"
+worker.childopts: "-Xmx32m"
+logviewer.childopts: "-Xmx32m"
+
