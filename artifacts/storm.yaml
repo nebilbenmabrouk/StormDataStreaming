@@ -10,6 +10,6 @@ pacemaker.childopts: "-Xmx64m"
 supervisor.memory.capacity.mb: 64
 supervisor.cpu.capacity: 100.0
 supervisor.childopts: "-Xmx64m"
-worker.childopts: "-Xmx128m"
+worker.childopts: "-Xmx64m"
 logviewer.childopts: "-Xmx32m"
 
