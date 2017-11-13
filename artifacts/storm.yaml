@@ -9,6 +9,6 @@ drpc.childopts: "-Xmx64m"
 pacemaker.childopts: "-Xmx64m"
 supervisor.memory.capacity.mb: 256
 supervisor.cpu.capacity: 100.0
-#supervisor.childopts: "-Xmx128m"
-#worker.childopts: "-Xmx128m"
+supervisor.childopts: "-Xmx64m"
+worker.childopts: "-Xmx64m"
 logviewer.childopts: "-Xmx32m"
