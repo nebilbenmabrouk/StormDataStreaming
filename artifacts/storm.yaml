@@ -3,7 +3,7 @@ storm.zookeeper.servers:
 storm.zookeeper.port: 2181 
 nimbus.seeds: ["nimbus"]
 storm.scheduler: "org.apache.storm.scheduler.resource.ResourceAwareScheduler"
-nimbus.childopts: "-Xmx64m"
+nimbus.childopts: "-Xmx128m"
 ui.childopts: "-Xmx64m"
 drpc.childopts: "-Xmx64m"
 pacemaker.childopts: "-Xmx64m"
