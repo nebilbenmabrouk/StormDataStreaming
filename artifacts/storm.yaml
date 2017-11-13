@@ -3,12 +3,12 @@ storm.zookeeper.servers:
 storm.zookeeper.port: 2181 
 nimbus.seeds: ["nimbus"]
 storm.scheduler: "org.apache.storm.scheduler.resource.ResourceAwareScheduler"
-nimbus.childopts: "-Xmx128m"
+nimbus.childopts: "-Xmx64m"
 ui.childopts: "-Xmx64m"
 drpc.childopts: "-Xmx64m"
 pacemaker.childopts: "-Xmx64m"
-supervisor.memory.capacity.mb: 128
-supervisor.cpu.capacity: 100.0
-supervisor.childopts: "-Xmx128m"
-worker.childopts: "-Xmx128m"
+supervisor.memory.capacity.mb: 896
+supervisor.cpu.capacity: 80.0
+#supervisor.childopts: "-Xmx128m"
+#worker.childopts: "-Xmx128m"
 logviewer.childopts: "-Xmx32m"
