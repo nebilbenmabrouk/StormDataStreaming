@@ -7,9 +7,8 @@ nimbus.childopts: "-Xmx128m"
 ui.childopts: "-Xmx64m"
 drpc.childopts: "-Xmx64m"
 pacemaker.childopts: "-Xmx64m"
-supervisor.memory.capacity.mb: 64
+supervisor.memory.capacity.mb: 128
 supervisor.cpu.capacity: 100.0
-supervisor.childopts: "-Xmx256m"
-worker.childopts: "-Xmx256m"
+supervisor.childopts: "-Xmx128m"
+worker.childopts: "-Xmx128m"
 logviewer.childopts: "-Xmx32m"
-
